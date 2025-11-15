@@ -166,7 +166,7 @@ async def generate_signal(
     return signal
 
 
-@router.get("/dashboard", response_model=DashboardResponse)
+@router.get("/dashboard")
 async def get_dashboard(db: Session = Depends(get_db)):
     """Get dashboard data with top movers and latest signals."""
     # Get top 20 cryptocurrencies
@@ -197,9 +197,9 @@ async def get_dashboard(db: Session = Depends(get_db)):
 
         if latest_price:
             dashboard_data.append({
-                "cryptocurrency": crypto,
-                "latest_price": latest_price,
-                "latest_signal": latest_signal
+                "cryptocurrency": CryptocurrencyResponse.model_validate(crypto),
+                "latest_price": PriceHistoryResponse.model_validate(latest_price),
+                "latest_signal": TradingSignalResponse.model_validate(latest_signal) if latest_signal else None
             })
 
     # Sort by 24h change to get top movers

@@ -12,7 +12,7 @@ psycopg2-binary==2.9.9
 # Data Analysis
 pandas==2.1.4
 numpy==1.26.3
-pandas-ta==0.3.14b0
+# pandas-ta - not needed for current implementation
 
 # API Clients
 requests==2.31.0
