@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Tracker - API Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header h1 { color: #667eea; margin-bottom: 10px; }
+        .info { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .info code { background: #ffeaa7; padding: 2px 6px; border-radius: 4px; }
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section h2 { color: #333; margin-bottom: 15px; }
+        .endpoint {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .endpoint:hover { background: #edf2f7; transform: translateX(5px); }
+        .endpoint .method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .get { background: #48bb78; color: white; }
+        .post { background: #4299e1; color: white; }
+        .url { color: #667eea; font-family: monospace; }
+        .response {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .response.show { display: block; }
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        .btn:hover { background: #5568d3; }
+        .loading { color: #888; font-style: italic; }
+        .error { color: #f56565; }
+        input {
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            width: 400px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Cryptocurrency Tracker - API Demo</h1>
+            <p>Test the crypto tracker API endpoints</p>
+
+            <div class="info">
+                <strong>⚠️ Setup Required:</strong><br>
+                The API is running in a container. Enter the base URL below (if using port forwarding, it might be something like
+                <code>http://localhost:8000</code> or a forwarded URL from VS Code/Claude Desktop)
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label><strong>API Base URL:</strong></label><br>
+                <input type="text" id="apiBaseUrl" value="http://localhost:8000" placeholder="http://localhost:8000">
+                <button class="btn" onclick="testConnection()">Test Connection</button>
+                <div id="connectionStatus" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📡 API Endpoints</h2>
+
+            <div class="endpoint" onclick="callEndpoint('/health', 'health')">
+                <span class="method get">GET</span>
+                <span class="url">/health</span> - Health check
+                <div id="response-health" class="response"></div>
+            </div>
+
+            <div class="endpoint" onclick="callEndpoint('/api/v1/cryptocurrencies?limit=10', 'cryptos')">
+                <span class="method get">GET</span>
+                <span class="url">/api/v1/cryptocurrencies</span> - Get all cryptocurrencies
+                <div id="response-cryptos" class="response"></div>
+            </div>
+
+            <div class="endpoint" onclick="callEndpoint('/api/v1/cryptocurrencies/bitcoin', 'bitcoin')">
+                <span class="method get">GET</span>
+                <span class="url">/api/v1/cryptocurrencies/bitcoin</span> - Get Bitcoin details
+                <div id="response-bitcoin" class="response"></div>
+            </div>
+
+            <div class="endpoint" onclick="callEndpoint('/api/v1/cryptocurrencies/bitcoin/signals', 'signals')">
+                <span class="method get">GET</span>
+                <span class="url">/api/v1/cryptocurrencies/bitcoin/signals</span> - Get Bitcoin signals
+                <div id="response-signals" class="response"></div>
+            </div>
+
+            <div class="endpoint" onclick="callEndpoint('/api/v1/cryptocurrencies/bitcoin/price-history?days=7', 'history')">
+                <span class="method get">GET</span>
+                <span class="url">/api/v1/cryptocurrencies/bitcoin/price-history?days=7</span> - Get price history
+                <div id="response-history" class="response"></div>
+            </div>
+
+            <div class="endpoint" onclick="callEndpoint('/api/v1/dashboard', 'dashboard')">
+                <span class="method get">GET</span>
+                <span class="url">/api/v1/dashboard</span> - Get dashboard data
+                <div id="response-dashboard" class="response"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📚 Documentation</h2>
+            <p>For full API documentation, visit: <code id="docsUrl">http://localhost:8000/docs</code></p>
+            <button class="btn" onclick="openDocs()">Open API Docs</button>
+        </div>
+    </div>
+
+    <script>
+        function getBaseUrl() {
+            return document.getElementById('apiBaseUrl').value.replace(/\/$/, '');
+        }
+
+        async function testConnection() {
+            const status = document.getElementById('connectionStatus');
+            const baseUrl = getBaseUrl();
+            status.innerHTML = '<span class="loading">Testing connection...</span>';
+
+            try {
+                const response = await fetch(`${baseUrl}/health`);
+                const data = await response.json();
+
+                if (data.status === 'healthy') {
+                    status.innerHTML = '<span style="color: #48bb78;">✅ Connection successful!</span>';
+                    document.getElementById('docsUrl').textContent = `${baseUrl}/docs`;
+                } else {
+                    status.innerHTML = '<span class="error">⚠️ Unexpected response</span>';
+                }
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Connection failed: ${error.message}<br>Make sure the API is running and the URL is correct.</span>`;
+            }
+        }
+
+        async function callEndpoint(endpoint, id) {
+            const responseDiv = document.getElementById(`response-${id}`);
+            const baseUrl = getBaseUrl();
+
+            if (responseDiv.classList.contains('show')) {
+                responseDiv.classList.remove('show');
+                return;
+            }
+
+            responseDiv.innerHTML = '<span class="loading">Loading...</span>';
+            responseDiv.classList.add('show');
+
+            try {
+                const response = await fetch(`${baseUrl}${endpoint}`);
+                const data = await response.json();
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            }
+        }
+
+        function openDocs() {
+            const baseUrl = getBaseUrl();
+            window.open(`${baseUrl}/docs`, '_blank');
+        }
+
+        // Test connection on load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 500);
+        });
+    </script>
+</body>
+</html>
