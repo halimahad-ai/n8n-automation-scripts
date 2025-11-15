@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Tracker & Insights</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Cryptocurrency Tracker & Insights</h1>
+            <div class="header-actions">
+                <button id="refreshBtn" class="btn btn-primary">🔄 Refresh Data</button>
+                <button id="fetchBtn" class="btn btn-secondary">📡 Fetch Latest</button>
+            </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Tracked</div>
+                <div class="stat-value" id="totalTracked">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Signals</div>
+                <div class="stat-value" id="activeSignals">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Buy Signals</div>
+                <div class="stat-value buy" id="buySignals">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Sell Signals</div>
+                <div class="stat-value sell" id="sellSignals">-</div>
+            </div>
+        </div>
+
+        <!-- Top Movers Section -->
+        <div class="section">
+            <h2>📈 Top Gainers (24h)</h2>
+            <div id="gainersContainer" class="crypto-grid"></div>
+        </div>
+
+        <div class="section">
+            <h2>📉 Top Losers (24h)</h2>
+            <div id="losersContainer" class="crypto-grid"></div>
+        </div>
+
+        <!-- Cryptocurrency List -->
+        <div class="section">
+            <h2>💰 All Cryptocurrencies</h2>
+            <div class="controls">
+                <input type="text" id="searchInput" placeholder="Search cryptocurrency..." />
+                <select id="sortSelect">
+                    <option value="rank">Sort by Rank</option>
+                    <option value="price_asc">Price (Low to High)</option>
+                    <option value="price_desc">Price (High to Low)</option>
+                    <option value="change_desc">24h Change (Highest)</option>
+                    <option value="change_asc">24h Change (Lowest)</option>
+                </select>
+            </div>
+            <div id="cryptoList" class="crypto-list"></div>
+        </div>
+
+        <!-- Trading Signals Section -->
+        <div class="section">
+            <h2>🎯 Recent Trading Signals</h2>
+            <div id="signalsContainer" class="signals-grid"></div>
+        </div>
+
+        <!-- Crypto Detail Modal -->
+        <div id="detailModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
