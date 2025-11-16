@@ -112,6 +112,7 @@ class Game {
         document.getElementById('game-over').classList.add('hidden');
 
         this.updateDisplay();
+        this.drawNext();
         this.lastTime = performance.now();
         this.gameLoop();
     }
@@ -395,6 +396,10 @@ class Game {
     drawNext() {
         if (!this.nextPiece) return;
 
+        // Clear the canvas completely
+        this.nextCtx.clearRect(0, 0, this.nextCanvas.width, this.nextCanvas.height);
+
+        // Fill with background color
         this.nextCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
         this.nextCtx.fillRect(0, 0, this.nextCanvas.width, this.nextCanvas.height);
 
@@ -443,7 +448,8 @@ class Piece {
     }
 
     getShape() {
-        if (this.shapes.length === 1) {
+        // O piece doesn't rotate
+        if (this.type === 'O') {
             return this.shapes[0];
         }
         return this.getRotatedShape();
