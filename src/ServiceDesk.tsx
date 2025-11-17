@@ -1421,35 +1421,15 @@ const FocusModeLayout: React.FC<FocusModeLayoutProps> = ({
 }) => {
   return (
     <div className="flex-1 flex overflow-hidden">
-      {/* Main Panel - 80% */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-white">
-        {ticket ? (
-          <FullTicketView
-            ticket={ticket}
-            agents={agents}
-            kbArticles={kbArticles}
-            onUpdateTicket={onUpdateTicket}
-          />
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-400">
-            <div className="text-center">
-              <span className="text-6xl mb-4 block">🎯</span>
-              <p className="text-xl font-medium">Focus Mode</p>
-              <p className="mt-2">Select a ticket to start deep dive analysis</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Side Panel - 20% */}
-      <div className="w-80 border-l border-gray-200 bg-gray-50 flex flex-col overflow-hidden">
+      {/* Side Panel (LEFT) - 20% Priority Queue */}
+      <div className="w-80 border-r border-gray-200 bg-gray-50 flex flex-col overflow-hidden">
         <div className="p-4 border-b border-gray-200 bg-white">
           <h3 className="font-semibold">Priority Queue</h3>
           <p className="text-xs text-gray-600 mt-1">{tickets.length} tickets</p>
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {tickets.slice(0, 20).map(t => (
+          {tickets.slice(0, 50).map(t => (
             <div
               key={t.id}
               onClick={() => onSelectTicket(t.id)}
@@ -1468,11 +1448,31 @@ const FocusModeLayout: React.FC<FocusModeLayoutProps> = ({
                 <span className={`text-xs px-2 py-0.5 rounded ${getSLAColorClass(t.sla.resolutionTime)}`}>
                   {formatTimeRemaining(t.sla.resolutionTime.remaining)}
                 </span>
-                <span className="text-xs text-gray-500">{t.customer.name}</span>
+                <span className="text-xs text-gray-500 truncate">{t.customer.name}</span>
               </div>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Main Panel (RIGHT) - 80% Ticket Details */}
+      <div className="flex-1 flex flex-col overflow-hidden bg-white">
+        {ticket ? (
+          <FullTicketView
+            ticket={ticket}
+            agents={agents}
+            kbArticles={kbArticles}
+            onUpdateTicket={onUpdateTicket}
+          />
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-400">
+            <div className="text-center">
+              <span className="text-6xl mb-4 block">🎯</span>
+              <p className="text-xl font-medium">Focus Mode</p>
+              <p className="mt-2">Select a ticket from the Priority Queue to start deep dive analysis</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1686,7 +1686,7 @@ const TriageColumn: React.FC<TriageColumnProps> = ({
             <p className="text-sm font-medium line-clamp-2 mb-2">{ticket.title}</p>
 
             <div className="flex items-center gap-2 text-xs text-gray-600">
-              <span className={`px-2 py-0.5 rounded ${getSLAColorClass(t.sla.resolutionTime)}`}>
+              <span className={`px-2 py-0.5 rounded ${getSLAColorClass(ticket.sla.resolutionTime)}`}>
                 {formatTimeRemaining(ticket.sla.resolutionTime.remaining)}
               </span>
               <span className="truncate">{ticket.customer.name}</span>
@@ -2145,46 +2145,34 @@ interface OverviewTabProps {
 
 const OverviewTab: React.FC<OverviewTabProps> = ({ ticket, agents, onUpdateTicket }) => {
   return (
-    <div className="p-6 space-y-6">
-      {/* Description Card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold mb-4">📋 Ticket Description</h3>
-        <div className="prose max-w-none">
-          <p className="text-gray-700 whitespace-pre-wrap">{ticket.description}</p>
-        </div>
+    <div className="p-4 space-y-4">
+      {/* Description Card - More Compact */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 className="text-base font-semibold mb-2">📋 Ticket Description</h3>
+        <p className="text-sm text-gray-700 line-clamp-3">{ticket.description}</p>
 
-        {/* Attachments */}
+        {/* Attachments - Inline if present */}
         {ticket.attachments.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <h4 className="font-medium mb-2">📎 Attachments ({ticket.attachments.length})</h4>
-            <div className="grid grid-cols-2 gap-2">
-              {ticket.attachments.map(att => (
-                <div key={att.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
-                  <span className="text-2xl">📄</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{att.filename}</p>
-                    <p className="text-xs text-gray-500">{(att.size / 1024).toFixed(1)} KB</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="mt-3 pt-3 border-t border-gray-200">
+            <span className="text-xs font-medium text-gray-600">📎 {ticket.attachments.length} Attachments</span>
           </div>
         )}
       </div>
 
-      {/* Impact & Urgency Matrix */}
-      <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">🎯 Impact Assessment</h3>
-          <div className="space-y-3">
+      {/* Impact, Timeline & Actions - All in One Row */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Impact Assessment - Compact */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-base font-semibold mb-3">🎯 Impact Assessment</h3>
+          <div className="space-y-2">
             <div>
-              <label className="text-sm font-medium text-gray-700">Impact Level</label>
-              <div className="flex gap-2 mt-1">
+              <label className="text-xs font-medium text-gray-700">Impact</label>
+              <div className="flex gap-1 mt-1">
                 {[1, 2, 3, 4, 5].map(level => (
                   <button
                     key={level}
                     onClick={() => onUpdateTicket(ticket.id, { impact: level })}
-                    className={`flex-1 py-2 rounded font-medium text-sm transition-all ${
+                    className={`flex-1 py-1.5 rounded text-xs font-medium transition-all ${
                       ticket.impact === level
                         ? 'bg-red-500 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -2194,17 +2182,16 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ ticket, agents, onUpdateTicke
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mt-1">1 = Single user, 5 = Entire organization</p>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700">Urgency Level</label>
-              <div className="flex gap-2 mt-1">
+              <label className="text-xs font-medium text-gray-700">Urgency</label>
+              <div className="flex gap-1 mt-1">
                 {[1, 2, 3, 4, 5].map(level => (
                   <button
                     key={level}
                     onClick={() => onUpdateTicket(ticket.id, { urgency: level })}
-                    className={`flex-1 py-2 rounded font-medium text-sm transition-all ${
+                    className={`flex-1 py-1.5 rounded text-xs font-medium transition-all ${
                       ticket.urgency === level
                         ? 'bg-orange-500 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -2214,86 +2201,68 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ ticket, agents, onUpdateTicke
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mt-1">1 = Can wait, 5 = Business critical</p>
             </div>
 
-            <div className="pt-3 border-t border-gray-200">
-              <div className="text-sm">
-                <span className="font-medium">Calculated Priority:</span>
-                <span className={`ml-2 px-2 py-1 rounded text-sm ${getPriorityStyles(ticket.priority)}`}>
+            <div className="pt-2 border-t border-gray-200">
+              <div className="text-xs">
+                <span className="font-medium">Priority:</span>
+                <span className={`ml-1 px-2 py-0.5 rounded text-xs ${getPriorityStyles(ticket.priority)}`}>
                   {ticket.priority}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Based on Impact × Urgency matrix</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">⚡ Quick Timeline</h3>
-          <div className="space-y-3">
-            <TimelineEvent
-              icon="📝"
-              title="Ticket Created"
-              timestamp={ticket.createdAt}
-              color="blue"
-            />
+        {/* Timeline - Compact */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-base font-semibold mb-3">⚡ Timeline</h3>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">📝</span>
+              <div className="flex-1 text-xs">
+                <p className="font-medium">Created</p>
+                <p className="text-gray-500">{formatDate(ticket.createdAt)}</p>
+              </div>
+            </div>
             {ticket.firstResponseAt && (
-              <TimelineEvent
-                icon="💬"
-                title="First Response"
-                timestamp={ticket.firstResponseAt}
-                color="green"
-              />
+              <div className="flex items-center gap-2">
+                <span className="text-sm">💬</span>
+                <div className="flex-1 text-xs">
+                  <p className="font-medium">First Response</p>
+                  <p className="text-gray-500">{formatDate(ticket.firstResponseAt)}</p>
+                </div>
+              </div>
             )}
             {ticket.assignedTo && (
-              <TimelineEvent
-                icon="👤"
-                title={`Assigned to ${agents.get(ticket.assignedTo)?.name || 'Agent'}`}
-                timestamp={ticket.updatedAt}
-                color="purple"
-              />
-            )}
-            {ticket.resolvedAt && (
-              <TimelineEvent
-                icon="✅"
-                title="Resolved"
-                timestamp={ticket.resolvedAt}
-                color="green"
-              />
+              <div className="flex items-center gap-2">
+                <span className="text-sm">👤</span>
+                <div className="flex-1 text-xs">
+                  <p className="font-medium">Assigned</p>
+                  <p className="text-gray-500">{agents.get(ticket.assignedTo)?.name || 'Agent'}</p>
+                </div>
+              </div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Action Center */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold mb-4">🎯 Recommended Actions</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <ActionCard
-            icon="📚"
-            title="Check Knowledge Base"
-            description="3 relevant articles found"
-            color="blue"
-          />
-          <ActionCard
-            icon="🔗"
-            title="Review Similar Tickets"
-            description="5 resolved tickets with same issue"
-            color="green"
-          />
-          <ActionCard
-            icon="🔧"
-            title="Run Diagnostics"
-            description="Automated system check available"
-            color="purple"
-          />
-          <ActionCard
-            icon="👥"
-            title="Consult Expert"
-            description="2 specialists available"
-            color="orange"
-          />
+        {/* Quick Actions - Compact */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-base font-semibold mb-3">🎯 Quick Actions</h3>
+          <div className="space-y-2">
+            <button className="w-full text-left p-2 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 transition-all">
+              <span className="text-xs font-medium text-blue-900">📚 Knowledge Base</span>
+              <p className="text-xs text-gray-600">3 articles</p>
+            </button>
+            <button className="w-full text-left p-2 bg-green-50 border border-green-200 rounded hover:bg-green-100 transition-all">
+              <span className="text-xs font-medium text-green-900">🔗 Similar Tickets</span>
+              <p className="text-xs text-gray-600">5 resolved</p>
+            </button>
+            <button className="w-full text-left p-2 bg-purple-50 border border-purple-200 rounded hover:bg-purple-100 transition-all">
+              <span className="text-xs font-medium text-purple-900">🔧 Diagnostics</span>
+              <p className="text-xs text-gray-600">Run checks</p>
+            </button>
+          </div>
         </div>
       </div>
     </div>
