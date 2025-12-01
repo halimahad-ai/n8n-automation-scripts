@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-info">
+            <h1>TETRIS</h1>
+            <div class="info-panel">
+                <div class="score-section">
+                    <h2>Score</h2>
+                    <div id="score">0</div>
+                </div>
+                <div class="level-section">
+                    <h2>Level</h2>
+                    <div id="level">1</div>
+                </div>
+                <div class="lines-section">
+                    <h2>Lines</h2>
+                    <div id="lines">0</div>
+                </div>
+            </div>
+            <div class="next-piece-container">
+                <h2>Next</h2>
+                <canvas id="next-canvas" width="120" height="120"></canvas>
+            </div>
+            <div class="controls-info">
+                <h2>Controls</h2>
+                <ul>
+                    <li><strong>←/→</strong> Move</li>
+                    <li><strong>↓</strong> Soft Drop</li>
+                    <li><strong>↑</strong> Rotate</li>
+                    <li><strong>Space</strong> Hard Drop</li>
+                    <li><strong>P</strong> Pause</li>
+                    <li><strong>R</strong> Restart</li>
+                </ul>
+            </div>
+            <button id="start-button" class="game-button">Start Game</button>
+            <button id="pause-button" class="game-button" disabled>Pause</button>
+        </div>
+        <div class="game-board-container">
+            <canvas id="game-canvas" width="300" height="600"></canvas>
+            <div id="game-over" class="game-over hidden">
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="final-score">0</span></p>
+                <button id="restart-button" class="game-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <script src="tetris.js"></script>
+</body>
+</html>
